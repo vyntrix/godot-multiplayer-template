@@ -1,0 +1,59 @@
+[gd_scene load_steps=9 format=3 uid="uid://c0hrn5pe2ti1e"]
+
+[ext_resource type="Material" uid="uid://bbap35vkl2kcg" path="res://resources/materials/ground_grid.tres" id="1_fsby3"]
+[ext_resource type="Texture2D" uid="uid://bpnliuxkwub06" path="res://assets/textures/white_grid.png" id="2_leamy"]
+
+[sub_resource type="PhysicalSkyMaterial" id="PhysicalSkyMaterial_all2k"]
+
+[sub_resource type="Sky" id="Sky_vc4nx"]
+sky_material = SubResource("PhysicalSkyMaterial_all2k")
+radiance_size = 2
+
+[sub_resource type="Environment" id="Environment_fsby3"]
+background_mode = 2
+sky = SubResource("Sky_vc4nx")
+tonemap_mode = 4
+
+[sub_resource type="CapsuleMesh" id="CapsuleMesh_721jg"]
+radius = 0.3
+height = 1.8
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_geflf"]
+albedo_texture = ExtResource("2_leamy")
+
+[sub_resource type="BoxMesh" id="BoxMesh_fkd6t"]
+size = Vector3(0.3, 0.15, 0.2)
+
+[node name="MainMenu" type="Node3D"]
+
+[node name="Environment" type="Node" parent="."]
+
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="Environment"]
+transform = Transform3D(-0.866025, -0.433013, 0.25, 0, 0.5, 0.866025, -0.5, 0.75, -0.433013, 0, 0, 0)
+shadow_enabled = true
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="Environment"]
+environment = SubResource("Environment_fsby3")
+
+[node name="Ground" type="CSGBox3D" parent="."]
+use_collision = true
+size = Vector3(250, 0.001, 250)
+material = ExtResource("1_fsby3")
+
+[node name="PlayerModel" type="Node3D" parent="."]
+transform = Transform3D(0.866025, 0, -0.5, 0, 1, 0, 0.5, 0, 0.866025, -2, 0, 1)
+
+[node name="Capsule" type="MeshInstance3D" parent="PlayerModel"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.9, 0)
+mesh = SubResource("CapsuleMesh_721jg")
+surface_material_override/0 = SubResource("StandardMaterial3D_geflf")
+
+[node name="Headset" type="MeshInstance3D" parent="PlayerModel/Capsule"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5, -0.3)
+mesh = SubResource("BoxMesh_fkd6t")
+surface_material_override/0 = ExtResource("1_fsby3")
+
+[node name="Camera3D" type="Camera3D" parent="."]
+transform = Transform3D(-0.947757, -0.0341623, 0.317157, 0, 0.994249, 0.107095, -0.318992, 0.1015, -0.942307, 0.421683, 1.62883, -3.27853)
+current = true
+fov = 30.0

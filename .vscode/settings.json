@@ -1,0 +1,15 @@
+{
+	"editor.tabSize": 4,
+	"editor.insertSpaces": false,
+	"editor.detectIndentation": false,
+	"files.trimTrailingWhitespace": true,
+	"files.insertFinalNewline": true,
+	"files.eol": "\n",
+	"editor.formatOnSave": true,
+	"editor.defaultFormatter": "esbenp.prettier-vscode",
+	"[gdscript]": {
+		"editor.defaultFormatter": "geequlim.godot-tools"
+	},
+	"cSpell.enabled": false,
+	"workbench.editor.editorActionsLocation": "titleBar"
+}

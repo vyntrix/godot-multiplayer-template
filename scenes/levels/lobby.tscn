@@ -1,0 +1,55 @@
+[gd_scene load_steps=7 format=3 uid="uid://cl3jbmjvdq0xr"]
+
+[ext_resource type="Material" uid="uid://bbap35vkl2kcg" path="res://resources/materials/ground_grid.tres" id="1_c13em"]
+[ext_resource type="Script" uid="uid://bimu02ie64wib" path="res://components/managers/player_spawner.gd" id="1_kr2ft"]
+[ext_resource type="PackedScene" uid="uid://cmspe65yj5t6q" path="res://scenes/entities/player_controller.tscn" id="2_l7pl7"]
+
+[sub_resource type="PhysicalSkyMaterial" id="PhysicalSkyMaterial_c13em"]
+
+[sub_resource type="Sky" id="Sky_c13em"]
+sky_material = SubResource("PhysicalSkyMaterial_c13em")
+radiance_size = 2
+
+[sub_resource type="Environment" id="Environment_dka2y"]
+background_mode = 2
+sky = SubResource("Sky_c13em")
+tonemap_mode = 4
+
+[node name="Lobby" type="Node3D"]
+
+[node name="Environment" type="Node" parent="."]
+
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="Environment"]
+transform = Transform3D(-0.866025, -0.433013, 0.25, 0, 0.5, 0.866025, -0.5, 0.75, -0.433013, 0, 0, 0)
+shadow_enabled = true
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="Environment"]
+environment = SubResource("Environment_dka2y")
+
+[node name="PlayerSpawner" type="MultiplayerSpawner" parent="." node_paths=PackedStringArray("spawn_points")]
+spawn_path = NodePath("../Players")
+script = ExtResource("1_kr2ft")
+player_scene = ExtResource("2_l7pl7")
+spawn_points = [NodePath("../Players/Spawnpoints/Spawnpoint1"), NodePath("../Players/Spawnpoints/Spawnpoint2"), NodePath("../Players/Spawnpoints/Spawnpoint3"), NodePath("../Players/Spawnpoints/Spawnpoint4")]
+metadata/_custom_type_script = "uid://bimu02ie64wib"
+
+[node name="Players" type="Node3D" parent="."]
+
+[node name="Spawnpoints" type="Node3D" parent="Players"]
+
+[node name="Spawnpoint1" type="Marker3D" parent="Players/Spawnpoints"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2, 0, -2)
+
+[node name="Spawnpoint2" type="Marker3D" parent="Players/Spawnpoints"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2, 0, 2)
+
+[node name="Spawnpoint3" type="Marker3D" parent="Players/Spawnpoints"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2, 0, 2)
+
+[node name="Spawnpoint4" type="Marker3D" parent="Players/Spawnpoints"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2, 0, -2)
+
+[node name="Ground" type="CSGBox3D" parent="."]
+use_collision = true
+size = Vector3(250, 0.001, 250)
+material = ExtResource("1_c13em")

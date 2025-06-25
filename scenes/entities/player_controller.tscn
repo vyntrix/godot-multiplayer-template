@@ -1,0 +1,73 @@
+[gd_scene load_steps=11 format=3 uid="uid://cmspe65yj5t6q"]
+
+[ext_resource type="Script" uid="uid://21cbqbixuik3" path="res://components/player_controller/player_controller.gd" id="1_opoyq"]
+[ext_resource type="Texture2D" uid="uid://bpnliuxkwub06" path="res://assets/textures/white_grid.png" id="2_l4ht0"]
+[ext_resource type="Material" uid="uid://bbap35vkl2kcg" path="res://resources/materials/ground_grid.tres" id="3_7rbyl"]
+
+[sub_resource type="CapsuleMesh" id="CapsuleMesh_opoyq"]
+radius = 0.3
+height = 1.8
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_7rbyl"]
+albedo_texture = ExtResource("2_l4ht0")
+
+[sub_resource type="BoxMesh" id="BoxMesh_l4ht0"]
+size = Vector3(0.3, 0.15, 0.2)
+
+[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_ek20b"]
+radius = 0.3
+height = 1.8
+
+[sub_resource type="AudioStreamGenerator" id="AudioStreamGenerator_opoyq"]
+
+[sub_resource type="AudioStreamGenerator" id="AudioStreamGenerator_l4ht0"]
+
+[sub_resource type="SceneReplicationConfig" id="SceneReplicationConfig_7rbyl"]
+properties/0/path = NodePath(".:position")
+properties/0/spawn = true
+properties/0/replication_mode = 1
+properties/1/path = NodePath(".:rotation")
+properties/1/spawn = true
+properties/1/replication_mode = 1
+
+[node name="PlayerController" type="CharacterBody3D"]
+collision_layer = 2
+script = ExtResource("1_opoyq")
+
+[node name="WorldModel" type="Node3D" parent="."]
+unique_name_in_owner = true
+
+[node name="Capsule" type="MeshInstance3D" parent="WorldModel"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.9, 0)
+mesh = SubResource("CapsuleMesh_opoyq")
+surface_material_override/0 = SubResource("StandardMaterial3D_7rbyl")
+
+[node name="Headset" type="MeshInstance3D" parent="WorldModel/Capsule"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5, -0.3)
+mesh = SubResource("BoxMesh_l4ht0")
+surface_material_override/0 = ExtResource("3_7rbyl")
+
+[node name="Collision" type="CollisionShape3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.9, 0)
+shape = SubResource("CapsuleShape3D_ek20b")
+
+[node name="Head" type="Node3D" parent="."]
+unique_name_in_owner = true
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.6, 0)
+
+[node name="Camera" type="Camera3D" parent="Head"]
+unique_name_in_owner = true
+cull_mask = 524287
+
+[node name="ProxNetwork" type="AudioStreamPlayer3D" parent="."]
+unique_name_in_owner = true
+stream = SubResource("AudioStreamGenerator_opoyq")
+max_distance = 25.0
+
+[node name="ProxLocal" type="AudioStreamPlayer3D" parent="."]
+unique_name_in_owner = true
+stream = SubResource("AudioStreamGenerator_l4ht0")
+max_distance = 25.0
+
+[node name="MultiplayerSynchronizer" type="MultiplayerSynchronizer" parent="."]
+replication_config = SubResource("SceneReplicationConfig_7rbyl")
