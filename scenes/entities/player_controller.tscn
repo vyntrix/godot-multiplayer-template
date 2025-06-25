@@ -59,15 +59,15 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.6, 0)
 unique_name_in_owner = true
 cull_mask = 524287
 
+[node name="AudioListener3D" type="AudioListener3D" parent="Head/Camera"]
+
 [node name="ProxNetwork" type="AudioStreamPlayer3D" parent="."]
 unique_name_in_owner = true
 stream = SubResource("AudioStreamGenerator_opoyq")
-max_distance = 25.0
 
 [node name="ProxLocal" type="AudioStreamPlayer3D" parent="."]
 unique_name_in_owner = true
 stream = SubResource("AudioStreamGenerator_l4ht0")
-max_distance = 25.0
 
 [node name="MultiplayerSynchronizer" type="MultiplayerSynchronizer" parent="."]
 replication_config = SubResource("SceneReplicationConfig_7rbyl")

@@ -13,12 +13,15 @@ class_name PlayerController extends CharacterBody3D
 @export_category("Camera")
 @export var camera_sensitivity: float = 0.1
 
+@export_category("Proximity")
+@export var has_loopback: bool = false
+@export var max_distance: float = 30.0
+
 var input_dir: Vector2 = Vector2.ZERO
 var direction: Vector3 = Vector3.ZERO
 
 #region Proximity Variables
 var current_sample_rate: int = 4800
-var has_loopback: bool = false
 var local_playback: AudioStreamGeneratorPlayback = null
 var local_voice_buffer: PackedByteArray = PackedByteArray()
 var network_playback: AudioStreamGeneratorPlayback = null
@@ -33,10 +36,12 @@ func _ready() -> void:
 	Global.player = self
 	add_to_group("players")
 
+	prox_local.max_distance = max_distance
 	prox_local.stream.mix_rate = current_sample_rate
 	prox_local.play()
 	local_playback = prox_local.get_stream_playback()
 
+	prox_local.max_distance = max_distance
 	prox_network.stream.mix_rate = current_sample_rate
 	prox_network.play()
 	network_playback = prox_network.get_stream_playback()
