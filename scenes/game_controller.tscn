@@ -1,0 +1,29 @@
+[gd_scene load_steps=5 format=3 uid="uid://dctiktpqyar4l"]
+
+[ext_resource type="Material" uid="uid://dehcu0dx28i56" path="res://resources/materials/white_grid.tres" id="1_vq0e2"]
+
+[sub_resource type="PhysicalSkyMaterial" id="PhysicalSkyMaterial_vq0e2"]
+
+[sub_resource type="Sky" id="Sky_vc4nx"]
+sky_material = SubResource("PhysicalSkyMaterial_vq0e2")
+radiance_size = 2
+
+[sub_resource type="Environment" id="Environment_ts4rt"]
+background_mode = 2
+sky = SubResource("Sky_vc4nx")
+tonemap_mode = 4
+
+[node name="GameController" type="Node"]
+
+[node name="Environment" type="Node" parent="."]
+
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="Environment"]
+transform = Transform3D(-0.866025, -0.433013, 0.25, 0, 0.5, 0.866025, -0.5, 0.75, -0.433013, 0, 0, 0)
+shadow_enabled = true
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="Environment"]
+environment = SubResource("Environment_ts4rt")
+
+[node name="CSGBox3D" type="CSGBox3D" parent="."]
+material_override = ExtResource("1_vq0e2")
+size = Vector3(250, 0.001, 250)

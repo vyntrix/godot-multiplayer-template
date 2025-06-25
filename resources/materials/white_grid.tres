@@ -1,0 +1,8 @@
+[gd_resource type="StandardMaterial3D" load_steps=2 format=3 uid="uid://dehcu0dx28i56"]
+
+[ext_resource type="Texture2D" uid="uid://bpnliuxkwub06" path="res://assets/textures/white_grid.png" id="1_makie"]
+
+[resource]
+albedo_texture = ExtResource("1_makie")
+uv1_scale = Vector3(0.5, 0.5, 0.5)
+uv1_triplanar = true
