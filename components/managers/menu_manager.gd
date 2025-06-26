@@ -16,6 +16,9 @@ func _ready():
 func hide_main_canvas():
 	main_canvas.hide()
 
+func show_main_canvas():
+	main_canvas.show()
+
 func hide_all_menus():
 	main_menu.hide()
 	multiplayer_select_menu.hide()

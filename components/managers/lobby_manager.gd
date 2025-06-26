@@ -1,10 +1,10 @@
 class_name LobbyManager extends Node
 
 ## INFO: Export variables
-@export var network_manager: Node
+@export var network_manager: NetworkManager
 @export var map_spawner: MultiplayerSpawner
-@export var map_manager: Node
-@export var menu_manager: Node
+@export var map_manager: MapManager
+@export var menu_manager: MenuManager
 
 @export_group("Local Lobby")
 var local_lobby_id = 1
@@ -25,8 +25,13 @@ signal on_steam_lobby_created
 func _ready():
 	map_spawner.spawn_function = map_manager.spawn_map
 	Steam.join_requested.connect(_on_lobby_join_requested)
+	Steam.lobby_joined.connect(_on_lobby_joined)
 
 	check_command_line()
+
+func _on_lobby_joined(_lobby: int, _permissions: int, _locked: bool, response: int):
+	if response == Steam.CHAT_ROOM_ENTER_RESPONSE_SUCCESS:
+		menu_manager.hide_main_canvas()
 
 func _on_lobby_join_requested(_this_lobby_id: int, friend_id: int) -> void:
 	var owner_name: String = Steam.getFriendPersonaName(friend_id)

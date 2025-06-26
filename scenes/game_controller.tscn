@@ -87,15 +87,6 @@ custom_minimum_size = Vector2(150, 0)
 layout_mode = 2
 text = "Quit"
 
-[node name="Label" type="Label" parent="CanvasLayer/Control/MainMenu"]
-layout_mode = 0
-offset_left = 8.0
-offset_top = 590.0
-offset_right = 330.0
-offset_bottom = 639.0
-text = "Note:
-Voice Chat not working on Local currently"
-
 [node name="MultiplayerSelectMenu" type="Control" parent="CanvasLayer/Control"]
 visible = false
 layout_mode = 1
