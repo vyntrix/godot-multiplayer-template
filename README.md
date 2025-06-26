@@ -17,3 +17,7 @@ Simple multiplayer template for Godot 4.4
 ## Questions
 
 If you have any questions, feel free to contact me on [Discord](https://discord.com/users/655137292792496128)
+
+## Contributing
+
+Feel free to contribute! Just fork and open a pull request. 🫶
