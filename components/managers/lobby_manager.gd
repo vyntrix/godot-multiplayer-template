@@ -26,8 +26,15 @@ func _ready():
 	map_spawner.spawn_function = map_manager.spawn_map
 	Steam.join_requested.connect(_on_lobby_join_requested)
 	Steam.lobby_joined.connect(_on_lobby_joined)
+	Steam.lobby_kicked.connect(_on_lobby_kicked)
 
 	check_command_line()
+
+func _on_lobby_kicked(lobby_id: int, _admin_id: int, _due_to_disconnect: int) -> void:
+	Steam.leaveLobby(lobby_id)
+	menu_manager.show_main_canvas()
+	menu_manager.hide_all_menus()
+	menu_manager._on_public_multiplayer_button_pressed()
 
 func _on_lobby_joined(_lobby: int, _permissions: int, _locked: bool, response: int):
 	if response == Steam.CHAT_ROOM_ENTER_RESPONSE_SUCCESS:
@@ -130,16 +137,15 @@ func refresh_steam_lobby_list():
 func _on_steam_lobby_match_list(lobbies):
 	for lobby in lobbies:
 		var lobby_name: String = Steam.getLobbyData(lobby, "name")
-		var lobby_mode: String = Steam.getLobbyData(lobby, "mode")
+		var _lobby_mode: String = Steam.getLobbyData(lobby, "mode")
 		if lobby_name.is_empty():
 			continue
 
 		var lobby_num_members: int = Steam.getNumLobbyMembers(lobby)
 
-		var lobby_btn = Button.new()
-		lobby_btn.set_text("Lobby %s: %s [%s] - %s Player(s)" % [lobby, lobby_name, lobby_mode, lobby_num_members])
-		lobby_btn.set_size(Vector2(800, 50))
-		lobby_btn.set_name("lobby_%s" % lobby)
-		lobby_btn.connect("pressed", Callable(self, "join_steam_lobby").bind(lobby))
-
+		var lobby_btn: ServerPanel = menu_manager.server_panel.instantiate()
 		lobby_v_box_container.add_child(lobby_btn)
+		lobby_btn.server_name.text = lobby_name
+		lobby_btn.player_count.text = "%s Player(s)" % lobby_num_members
+		lobby_btn.name = "lobby_%s" % lobby
+		lobby_btn.join_button.connect("pressed", Callable(self, "join_steam_lobby").bind(lobby))

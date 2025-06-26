@@ -1,5 +1,6 @@
 class_name MenuManager extends Node
 
+@export var server_panel: PackedScene
 @export var main_canvas: CanvasLayer
 @export var main_menu: Control
 @export var multiplayer_select_menu: Control
