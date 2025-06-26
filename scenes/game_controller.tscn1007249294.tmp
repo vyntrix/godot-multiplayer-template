@@ -1,4 +1,4 @@
-[gd_scene load_steps=8 format=3 uid="uid://dctiktpqyar4l"]
+[gd_scene load_steps=7 format=3 uid="uid://dctiktpqyar4l"]
 
 [ext_resource type="Script" uid="uid://bqrnoubyb5xyt" path="res://components/managers/lobby_manager.gd" id="1_rc0pn"]
 [ext_resource type="Script" uid="uid://djqwyk1iv2mw3" path="res://components/managers/network_manager.gd" id="2_h843c"]
@@ -6,9 +6,6 @@
 [ext_resource type="Script" uid="uid://busevdy2omq1l" path="res://components/managers/map_manager.gd" id="4_burlk"]
 [ext_resource type="PackedScene" uid="uid://cl3jbmjvdq0xr" path="res://scenes/levels/lobby.tscn" id="5_e85df"]
 [ext_resource type="PackedScene" uid="uid://c0hrn5pe2ti1e" path="res://scenes/levels/main_menu.tscn" id="5_h843c"]
-
-[sub_resource type="LabelSettings" id="LabelSettings_e85df"]
-font_color = Color(1, 0.172498, 0.208016, 1)
 
 [node name="GameController" type="Node"]
 
@@ -25,7 +22,7 @@ metadata/_custom_type_script = "uid://bqrnoubyb5xyt"
 script = ExtResource("2_h843c")
 metadata/_custom_type_script = "uid://djqwyk1iv2mw3"
 
-[node name="MenuManager" type="Node" parent="." node_paths=PackedStringArray("main_canvas", "main_menu", "multiplayer_select_menu", "local_multiplayer_menu", "public_multiplayer_menu", "mic_select", "restart_prompt", "lobby_manager", "network_manager")]
+[node name="MenuManager" type="Node" parent="." node_paths=PackedStringArray("main_canvas", "main_menu", "multiplayer_select_menu", "local_multiplayer_menu", "public_multiplayer_menu", "mic_select", "lobby_manager", "network_manager")]
 script = ExtResource("3_e85df")
 main_canvas = NodePath("../CanvasLayer")
 main_menu = NodePath("../CanvasLayer/Control/MainMenu")
@@ -33,7 +30,6 @@ multiplayer_select_menu = NodePath("../CanvasLayer/Control/MultiplayerSelectMenu
 local_multiplayer_menu = NodePath("../CanvasLayer/Control/LocalMultiplayerMenu")
 public_multiplayer_menu = NodePath("../CanvasLayer/Control/PublicMultiplayerMenu")
 mic_select = NodePath("../CanvasLayer/Control/MainMenu/VBoxContainer/SelectMic")
-restart_prompt = NodePath("../CanvasLayer/Control/MainMenu/Restart Prompt")
 lobby_manager = NodePath("../LobbyManager")
 network_manager = NodePath("../NetworkManager")
 metadata/_custom_type_script = "uid://dnirqbsrgss6i"
@@ -95,20 +91,6 @@ layout_mode = 2
 custom_minimum_size = Vector2(150, 0)
 layout_mode = 2
 text = "Quit"
-
-[node name="Restart Prompt" type="Label" parent="CanvasLayer/Control/MainMenu"]
-visible = false
-layout_mode = 1
-anchors_preset = 2
-anchor_top = 1.0
-anchor_bottom = 1.0
-offset_left = 24.0
-offset_top = -47.0
-offset_right = 264.0
-offset_bottom = -24.0
-grow_vertical = 0
-text = "Restart the Game! (see console)"
-label_settings = SubResource("LabelSettings_e85df")
 
 [node name="MultiplayerSelectMenu" type="Control" parent="CanvasLayer/Control"]
 visible = false

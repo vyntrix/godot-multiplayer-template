@@ -33,6 +33,7 @@ properties/1/replication_mode = 1
 [node name="PlayerController" type="CharacterBody3D"]
 collision_layer = 2
 script = ExtResource("1_opoyq")
+has_loopback = true
 
 [node name="WorldModel" type="Node3D" parent="."]
 unique_name_in_owner = true
@@ -59,7 +60,8 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.6, 0)
 unique_name_in_owner = true
 cull_mask = 524287
 
-[node name="AudioListener3D" type="AudioListener3D" parent="Head/Camera"]
+[node name="AudioListener" type="AudioListener3D" parent="Head/Camera"]
+unique_name_in_owner = true
 
 [node name="ProxNetwork" type="AudioStreamPlayer3D" parent="."]
 unique_name_in_owner = true

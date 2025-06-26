@@ -2,6 +2,7 @@ class_name PlayerController extends CharacterBody3D
 
 @onready var head: Node3D = %Head
 @onready var camera: Camera3D = %Camera
+@onready var audio_listener: AudioListener3D = %AudioListener
 @onready var prox_network: AudioStreamPlayer3D = %ProxNetwork
 @onready var prox_local: AudioStreamPlayer3D = %ProxLocal
 
@@ -47,6 +48,7 @@ func _ready() -> void:
 	network_playback = prox_network.get_stream_playback()
 
 	camera.current = is_multiplayer_authority()
+	audio_listener.current = is_multiplayer_authority()
 
 	if is_multiplayer_authority():
 		player_name = SteamManager.steam_username
