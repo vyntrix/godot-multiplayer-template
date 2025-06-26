@@ -20,9 +20,11 @@ func _ready():
 	main_menu.show()
 	for input in AudioServer.get_input_device_list():
 		mic_select.add_item(input)
-	var current_mic = AudioServer.get_input_device_list().find(Settings.load_microphone())
-	mic_select.select(current_mic)
-	print(AudioServer.input_device)
+	var current_mic = AudioServer.input_device
+	for i in range(mic_select.get_item_count()):
+		if mic_select.get_item_text(i) == current_mic:
+			mic_select.select(i)
+			break
 
 func hide_main_canvas():
 	main_canvas.hide()
