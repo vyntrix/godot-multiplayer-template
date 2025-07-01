@@ -1,8 +1,27 @@
-[gd_scene load_steps=11 format=3 uid="uid://cmspe65yj5t6q"]
+[gd_scene load_steps=23 format=3 uid="uid://cmspe65yj5t6q"]
 
 [ext_resource type="Script" uid="uid://21cbqbixuik3" path="res://components/player_controller/player_controller.gd" id="1_opoyq"]
 [ext_resource type="Texture2D" uid="uid://bpnliuxkwub06" path="res://assets/textures/white_grid.png" id="2_l4ht0"]
 [ext_resource type="Material" uid="uid://bbap35vkl2kcg" path="res://resources/materials/ground_grid.tres" id="3_7rbyl"]
+[ext_resource type="PackedScene" uid="uid://ctfl6mj3hac3q" path="res://assets/models/character.blend" id="4_hwjx1"]
+[ext_resource type="Material" uid="uid://giuxtagir6al" path="res://resources/materials/character/top.tres" id="5_w7npb"]
+[ext_resource type="Material" uid="uid://mynrjylmv5e8" path="res://resources/materials/character/skin.tres" id="6_b6yx8"]
+[ext_resource type="Material" uid="uid://ddkwgy78w4ej2" path="res://resources/materials/character/pants.tres" id="7_jthoo"]
+[ext_resource type="Material" uid="uid://bsat8ucv0hbns" path="res://resources/materials/character/shoes.tres" id="8_b6yx8"]
+
+[sub_resource type="SceneReplicationConfig" id="SceneReplicationConfig_7rbyl"]
+properties/0/path = NodePath(".:position")
+properties/0/spawn = true
+properties/0/replication_mode = 1
+properties/1/path = NodePath(".:rotation")
+properties/1/spawn = true
+properties/1/replication_mode = 1
+properties/2/path = NodePath("AnimationTree:parameters/walking_direction_blend_space/blend_position")
+properties/2/spawn = true
+properties/2/replication_mode = 2
+properties/3/path = NodePath("Head:rotation:x")
+properties/3/spawn = true
+properties/3/replication_mode = 1
 
 [sub_resource type="CapsuleMesh" id="CapsuleMesh_opoyq"]
 radius = 0.3
@@ -22,24 +41,52 @@ height = 1.8
 
 [sub_resource type="AudioStreamGenerator" id="AudioStreamGenerator_l4ht0"]
 
-[sub_resource type="SceneReplicationConfig" id="SceneReplicationConfig_7rbyl"]
-properties/0/path = NodePath(".:position")
-properties/0/spawn = true
-properties/0/replication_mode = 1
-properties/1/path = NodePath(".:rotation")
-properties/1/spawn = true
-properties/1/replication_mode = 1
+[sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_hwjx1"]
+animation = &"idle"
+
+[sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_riij3"]
+animation = &"forward"
+
+[sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_gsftu"]
+animation = &"strafe left"
+
+[sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_w7npb"]
+animation = &"strafe right"
+
+[sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_b6yx8"]
+animation = &"backward"
+
+[sub_resource type="AnimationNodeBlendSpace2D" id="AnimationNodeBlendSpace2D_hwjx1"]
+blend_point_0/node = SubResource("AnimationNodeAnimation_hwjx1")
+blend_point_0/pos = Vector2(0, 0)
+blend_point_1/node = SubResource("AnimationNodeAnimation_riij3")
+blend_point_1/pos = Vector2(0, 1)
+blend_point_2/node = SubResource("AnimationNodeAnimation_gsftu")
+blend_point_2/pos = Vector2(-1, 0)
+blend_point_3/node = SubResource("AnimationNodeAnimation_w7npb")
+blend_point_3/pos = Vector2(1, 0)
+blend_point_4/node = SubResource("AnimationNodeAnimation_b6yx8")
+blend_point_4/pos = Vector2(0, -1)
+
+[sub_resource type="AnimationNodeBlendTree" id="AnimationNodeBlendTree_riij3"]
+nodes/walking_direction_blend_space/node = SubResource("AnimationNodeBlendSpace2D_hwjx1")
+nodes/walking_direction_blend_space/position = Vector2(-136.364, 121.212)
+node_connections = [&"output", 0, &"walking_direction_blend_space"]
 
 [node name="PlayerController" type="CharacterBody3D"]
 collision_layer = 2
 script = ExtResource("1_opoyq")
 has_loopback = true
 
+[node name="MultiplayerSynchronizer" type="MultiplayerSynchronizer" parent="."]
+replication_config = SubResource("SceneReplicationConfig_7rbyl")
+
 [node name="WorldModel" type="Node3D" parent="."]
 unique_name_in_owner = true
 
 [node name="Capsule" type="MeshInstance3D" parent="WorldModel"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.9, 0)
+visible = false
 mesh = SubResource("CapsuleMesh_opoyq")
 surface_material_override/0 = SubResource("StandardMaterial3D_7rbyl")
 
@@ -54,22 +101,173 @@ shape = SubResource("CapsuleShape3D_ek20b")
 
 [node name="Head" type="Node3D" parent="."]
 unique_name_in_owner = true
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.6, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.2741, 0)
 
 [node name="Camera" type="Camera3D" parent="Head"]
 unique_name_in_owner = true
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.382585, -0.23235)
 cull_mask = 524287
 
 [node name="AudioListener" type="AudioListener3D" parent="Head/Camera"]
 unique_name_in_owner = true
 
+[node name="HeadMarker" type="Marker3D" parent="Head"]
+transform = Transform3D(-1, 0, -8.74228e-08, 0, 1, 0, 8.74228e-08, 0, -1, 0, 0.616453, -0.00843471)
+
 [node name="ProxNetwork" type="AudioStreamPlayer3D" parent="."]
 unique_name_in_owner = true
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.63016, -0.269759)
 stream = SubResource("AudioStreamGenerator_opoyq")
 
 [node name="ProxLocal" type="AudioStreamPlayer3D" parent="."]
 unique_name_in_owner = true
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.63016, -0.269759)
 stream = SubResource("AudioStreamGenerator_l4ht0")
 
-[node name="MultiplayerSynchronizer" type="MultiplayerSynchronizer" parent="."]
-replication_config = SubResource("SceneReplicationConfig_7rbyl")
+[node name="humanoid" parent="." instance=ExtResource("4_hwjx1")]
+transform = Transform3D(-1, 0, -8.9407e-08, 0, 1, 0, 8.9407e-08, 0, -1, 0, 0, 0)
+
+[node name="Skeleton3D" parent="humanoid/Armature" index="0"]
+bones/0/position = Vector3(-0.351365, 921.585, -4.81606)
+bones/0/rotation = Quaternion(-0.0633369, 0.0155447, 0.00420672, 0.997862)
+bones/1/position = Vector3(5.96046e-08, 92.3472, 0.577778)
+bones/1/rotation = Quaternion(0.124877, 0.0410397, 0.00550921, 0.991308)
+bones/2/position = Vector3(-4.47035e-07, 107.741, -1.72853e-06)
+bones/2/rotation = Quaternion(0.0689238, 0.0138905, -0.00402782, 0.997517)
+bones/3/position = Vector3(2.38419e-06, 123.132, 2.34246e-05)
+bones/3/rotation = Quaternion(0.0674924, 0.0153419, -0.00274243, 0.997598)
+bones/4/position = Vector3(4.29153e-06, 138.523, -7.43371e-06)
+bones/4/rotation = Quaternion(-0.011419, -0.00801485, 0.00283914, 0.999899)
+bones/5/position = Vector3(-5.72205e-06, 116.128, -0.159605)
+bones/5/rotation = Quaternion(-0.118839, -0.0792308, 0.00291388, 0.989743)
+bones/6/position = Vector3(-2.17557e-06, 234.713, -0.322571)
+bones/7/position = Vector3(57.1499, 118.202, 0.0803452)
+bones/7/rotation = Quaternion(0.655604, 0.325784, -0.576346, 0.363144)
+bones/8/position = Vector3(-2.13203e-05, 122.169, 0.000228103)
+bones/8/rotation = Quaternion(0.357236, 0.164403, -0.0150405, 0.919308)
+bones/9/position = Vector3(-8.77885e-05, 286.761, -8.46436e-06)
+bones/9/rotation = Quaternion(-0.00218857, 3.97302e-06, 0.339044, 0.940768)
+bones/10/position = Vector3(-7.02217e-07, 291.599, -9.24178e-05)
+bones/11/position = Vector3(-57.1499, 118.203, 0.173826)
+bones/11/rotation = Quaternion(0.676986, -0.275876, 0.597254, 0.329954)
+bones/12/position = Vector3(1.54526e-05, 122.169, 9.9717e-05)
+bones/12/rotation = Quaternion(0.308507, 0.043175, -0.0833295, 0.946581)
+bones/13/position = Vector3(-4.66524e-06, 286.762, -3.74275e-06)
+bones/13/rotation = Quaternion(-0.0022822, -2.96575e-05, -0.335589, 0.942006)
+bones/14/position = Vector3(-3.07858e-05, 291.6, -8.02781e-05)
+bones/15/position = Vector3(96.3047, -51.2298, 2.40104)
+bones/15/rotation = Quaternion(0.0110893, 0.127232, 0.990186, -0.056754)
+bones/16/position = Vector3(6.01057e-06, 374.99, 1.29577e-06)
+bones/16/rotation = Quaternion(-0.428367, -0.0224447, 0.0025145, 0.903323)
+bones/17/position = Vector3(3.56166e-06, 388.803, -3.28308e-05)
+bones/17/rotation = Quaternion(0.390711, -0.0420141, -0.11158, 0.912759)
+bones/18/position = Vector3(1.52108e-05, 186.562, 2.57507e-06)
+bones/18/rotation = Quaternion(0.534996, 0.0438077, 0.0132132, 0.843615)
+bones/19/position = Vector3(-1.33477e-05, 61.943, 2.38434e-07)
+bones/20/rotation = Quaternion(-0.0398501, 0.0678845, 0.996795, 0.0142498)
+bones/21/position = Vector3(6.96657e-06, 374.988, 9.64451e-06)
+bones/21/rotation = Quaternion(-0.301723, 0.00931592, -0.0203949, 0.953132)
+bones/22/position = Vector3(-1.86208e-06, 388.943, 1.53244e-05)
+bones/22/rotation = Quaternion(0.501374, 0.0258057, 0.0194371, 0.864627)
+bones/23/position = Vector3(-6.63205e-07, 188.025, 8.80038e-06)
+bones/23/rotation = Quaternion(0.429517, -0.0114886, 0.005398, 0.90297)
+bones/24/position = Vector3(-2.08431e-05, 59.2989, 2.38309e-07)
+
+[node name="LookIK" type="SkeletonIK3D" parent="humanoid/Armature/Skeleton3D" index="0"]
+unique_name_in_owner = true
+root_bone = &"mixamorig_Spine"
+tip_bone = &"mixamorig_Head"
+target_node = NodePath("../../../../Head/HeadMarker")
+
+[node name="A1" parent="humanoid/Armature/Skeleton3D" index="1"]
+surface_material_override/0 = ExtResource("5_w7npb")
+
+[node name="A2" parent="humanoid/Armature/Skeleton3D" index="2"]
+surface_material_override/0 = ExtResource("6_b6yx8")
+
+[node name="A3" parent="humanoid/Armature/Skeleton3D" index="3"]
+surface_material_override/0 = ExtResource("6_b6yx8")
+
+[node name="B1" parent="humanoid/Armature/Skeleton3D" index="4"]
+surface_material_override/0 = ExtResource("5_w7npb")
+
+[node name="B2" parent="humanoid/Armature/Skeleton3D" index="5"]
+surface_material_override/0 = ExtResource("6_b6yx8")
+
+[node name="B3" parent="humanoid/Armature/Skeleton3D" index="6"]
+surface_material_override/0 = ExtResource("6_b6yx8")
+
+[node name="BODY1" parent="humanoid/Armature/Skeleton3D" index="7"]
+surface_material_override/0 = ExtResource("5_w7npb")
+
+[node name="BODY2" parent="humanoid/Armature/Skeleton3D" index="8"]
+surface_material_override/0 = ExtResource("5_w7npb")
+
+[node name="C1" parent="humanoid/Armature/Skeleton3D" index="9"]
+surface_material_override/0 = ExtResource("7_jthoo")
+
+[node name="C2" parent="humanoid/Armature/Skeleton3D" index="10"]
+surface_material_override/0 = ExtResource("7_jthoo")
+
+[node name="C3" parent="humanoid/Armature/Skeleton3D" index="11"]
+surface_material_override/0 = ExtResource("8_b6yx8")
+
+[node name="D1" parent="humanoid/Armature/Skeleton3D" index="12"]
+surface_material_override/0 = ExtResource("7_jthoo")
+
+[node name="D2" parent="humanoid/Armature/Skeleton3D" index="13"]
+surface_material_override/0 = ExtResource("7_jthoo")
+
+[node name="D3" parent="humanoid/Armature/Skeleton3D" index="14"]
+surface_material_override/0 = ExtResource("8_b6yx8")
+
+[node name="Head" parent="humanoid/Armature/Skeleton3D" index="15"]
+surface_material_override/0 = ExtResource("6_b6yx8")
+
+[node name="Neck" parent="humanoid/Armature/Skeleton3D" index="16"]
+surface_material_override/0 = ExtResource("6_b6yx8")
+
+[node name="PointA1" parent="humanoid/Armature/Skeleton3D" index="17"]
+surface_material_override/0 = ExtResource("5_w7npb")
+
+[node name="PointA2" parent="humanoid/Armature/Skeleton3D" index="18"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.98637, 1.49262, -0.043988)
+surface_material_override/0 = ExtResource("6_b6yx8")
+
+[node name="PointA3" parent="humanoid/Armature/Skeleton3D" index="19"]
+surface_material_override/0 = ExtResource("6_b6yx8")
+
+[node name="PointB1" parent="humanoid/Armature/Skeleton3D" index="20"]
+surface_material_override/0 = ExtResource("5_w7npb")
+
+[node name="PointB2" parent="humanoid/Armature/Skeleton3D" index="21"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.98637, 1.49262, -0.043988)
+surface_material_override/0 = ExtResource("6_b6yx8")
+
+[node name="PointB3" parent="humanoid/Armature/Skeleton3D" index="22"]
+surface_material_override/0 = ExtResource("6_b6yx8")
+
+[node name="PointC1" parent="humanoid/Armature/Skeleton3D" index="23"]
+surface_material_override/0 = ExtResource("7_jthoo")
+
+[node name="PointC2" parent="humanoid/Armature/Skeleton3D" index="24"]
+surface_material_override/0 = ExtResource("8_b6yx8")
+
+[node name="PointD1" parent="humanoid/Armature/Skeleton3D" index="25"]
+surface_material_override/0 = ExtResource("7_jthoo")
+
+[node name="PointD2" parent="humanoid/Armature/Skeleton3D" index="26"]
+surface_material_override/0 = ExtResource("8_b6yx8")
+
+[node name="AnimationPlayer" parent="humanoid" index="1"]
+autoplay = "idle"
+playback_default_blend_time = 0.1
+
+[node name="AnimationTree" type="AnimationTree" parent="."]
+unique_name_in_owner = true
+root_node = NodePath("%AnimationTree/../humanoid")
+tree_root = SubResource("AnimationNodeBlendTree_riij3")
+anim_player = NodePath("../humanoid/AnimationPlayer")
+parameters/walking_direction_blend_space/blend_position = Vector2(0, 0)
+
+[editable path="humanoid"]

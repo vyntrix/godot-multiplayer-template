@@ -5,6 +5,8 @@ class_name PlayerController extends CharacterBody3D
 @onready var audio_listener: AudioListener3D = %AudioListener
 @onready var prox_network: AudioStreamPlayer3D = %ProxNetwork
 @onready var prox_local: AudioStreamPlayer3D = %ProxLocal
+@onready var animation_tree: AnimationTree = %AnimationTree
+@onready var look_ik: SkeletonIK3D = %LookIK
 
 @export_category("Movement")
 @export var move_speed: float = 5.0
@@ -19,6 +21,7 @@ class_name PlayerController extends CharacterBody3D
 @export var max_distance: float = 30.0
 
 var input_dir: Vector2 = Vector2.ZERO
+var input_smoothed: Vector2 = Vector2.ZERO
 var direction: Vector3 = Vector3.ZERO
 
 #region Proximity Variables
@@ -65,6 +68,8 @@ func _ready() -> void:
 			steam_id = Steam.getSteamID()
 		player_name = Steam.getFriendPersonaName(steam_id)
 
+	look_ik.start()
+
 func _unhandled_input(event: InputEvent) -> void:
 	if event is InputEventMouseButton:
 		Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
@@ -104,6 +109,8 @@ func _physics_process(delta: float) -> void:
 	if !is_multiplayer_authority(): return
 
 	input_dir = Input.get_vector("move_left", "move_right", "move_forward", "move_backward")
+	input_smoothed = lerp(input_smoothed, input_dir, delta * 10.0)
+	animation_tree.set("parameters/walking_direction_blend_space/blend_position", input_smoothed)
 
 	if is_on_floor():
 		if Input.is_action_just_pressed("jump"):
