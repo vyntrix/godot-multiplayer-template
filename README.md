@@ -1,4 +1,4 @@
-![Preview Image](https://github.com/user-attachments/assets/58b442e1-5628-498b-9581-6df8361473e2)
+![Preview Image](https://github.com/user-attachments/assets/80302475-8b83-4dae-b39e-6feba2c9554f)
 
 Simple multiplayer template for Godot 4.4
 
