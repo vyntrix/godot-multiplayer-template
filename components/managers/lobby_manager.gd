@@ -23,14 +23,19 @@ signal on_local_lobby_created
 signal on_steam_lobby_created
 
 func _ready():
+	# Assigns the spawn_map function from the map_manager to the map_spawner's spawn_function property.
+	# This allows map_spawner to use map_manager's logic for spawning maps.
 	map_spawner.spawn_function = map_manager.spawn_map
-	Steam.join_requested.connect(_on_lobby_join_requested)
-	Steam.lobby_joined.connect(_on_lobby_joined)
-	Steam.lobby_kicked.connect(_on_lobby_kicked)
+
+	# Connects Steam lobby-related signals to their respective handler functions
+	Steam.join_requested.connect(_on_lobby_join_requested) # When a lobby join is requested, this function will be called
+	Steam.lobby_joined.connect(_on_lobby_joined) # When a lobby is successfully joined, this function will be called
+	Steam.lobby_kicked.connect(_on_lobby_kicked) # When a player is kicked from a lobby, this function will be called
 
 	check_command_line()
 
 func _on_lobby_kicked(lobby_id: int, _admin_id: int, _due_to_disconnect: int) -> void:
+	# TODO: THIS IS A TEMPORARY FIX, NEEDS TO BE REPLACED WITH A BETTER SOLUTION
 	Steam.leaveLobby(lobby_id)
 	menu_manager.show_main_canvas()
 	menu_manager.hide_all_menus()
@@ -44,6 +49,8 @@ func _on_lobby_join_requested(_this_lobby_id: int, friend_id: int) -> void:
 	var owner_name: String = Steam.getFriendPersonaName(friend_id)
 	print("Joining %s's lobby..." % owner_name)
 
+# This is typically used by Steam when a user clicks on a friend's name to join their game.
+# Joins a Steam lobby if "+connect_lobby <lobby_id>" is in the command line args.
 func check_command_line() -> void:
 	var these_arguments: Array = OS.get_cmdline_args()
 	if these_arguments.size() > 0:
@@ -74,6 +81,7 @@ func create_singleplayer_lobby():
 	on_singleplayer_lobby_created.emit()
 
 func create_local_lobby():
+	# If not in a Steam lobby, create a local server and spawn the lobby scene.
 	if SteamManager.lobby_id == 0:
 		var err = network_manager.get_peer().create_server(local_port, local_max_players)
 		if err != OK: print(err)
@@ -82,6 +90,7 @@ func create_local_lobby():
 		on_local_lobby_created.emit()
 
 func create_steam_lobby():
+	# If not in a Steam lobby, create a Steam lobby and spawn the lobby scene.
 	if SteamManager.lobby_id == 0:
 		network_manager.get_peer().create_lobby(SteamMultiplayerPeer.LOBBY_TYPE_PUBLIC, SteamManager.lobby_members_max)
 		network_manager.update_multiplayer_peer()
@@ -116,6 +125,7 @@ func _on_steam_lobby_created(connected: int, this_lobby_id: int) -> void:
 
 		Steam.setLobbyJoinable(steam_lobby_id, true)
 
+		# Sets lobby metadata.
 		Steam.setLobbyData(steam_lobby_id, "name", str(Steam.getPersonaName() + "'s Lobby"))
 		Steam.setLobbyData(steam_lobby_id, "mode", "godot")
 
@@ -123,6 +133,9 @@ func _on_steam_lobby_created(connected: int, this_lobby_id: int) -> void:
 		print("Allowing Steam to be relay backup: ", set_relay)
 
 func open_steam_lobby_list():
+	# Request Steam lobbies filtered by worldwide distance and "godot" mode.
+	# If we don't filter by mode, we might get lobbies from other games.
+	# Sometimes our lobbies might not show up if we don't filter by mode.
 	Steam.addRequestLobbyListDistanceFilter(Steam.LOBBY_DISTANCE_FILTER_WORLDWIDE)
 	Steam.addRequestLobbyListStringFilter("mode", "godot", Steam.LOBBY_COMPARISON_EQUAL)
 	print("Requesting a lobby list")
@@ -143,6 +156,7 @@ func _on_steam_lobby_match_list(lobbies):
 
 		var lobby_num_members: int = Steam.getNumLobbyMembers(lobby)
 
+		# Create a new lobby button for each lobby found.
 		var lobby_btn: ServerPanel = menu_manager.server_panel.instantiate()
 		lobby_v_box_container.add_child(lobby_btn)
 		lobby_btn.server_name.text = lobby_name

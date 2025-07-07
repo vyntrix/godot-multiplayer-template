@@ -8,6 +8,10 @@ var current_map: Node
 func _ready() -> void:
 	current_map = menu_scene
 
+# Spawns a map based on the provided data.
+# The data parameter is expected to be a string representing the path to the map scene.
+# If a current map exists, it is freed before spawning the new one.
+# Returns the newly spawned map instance.
 func spawn_map(data):
 	if current_map != null:
 		current_map.queue_free()

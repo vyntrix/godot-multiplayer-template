@@ -15,6 +15,7 @@ var steam_username: String = ""
 func _ready() -> void:
 	initialize_steam()
 
+	# Connect to Steam callbacks
 	Steam.lobby_joined.connect(_on_lobby_joined)
 	Steam.p2p_session_request.connect(_on_p2p_session_request)
 	Steam.p2p_session_connect_fail.connect(_on_p2p_session_connect_fail)
@@ -26,10 +27,12 @@ func _on_lobby_data_update(_success: int, _lobby_id: int, _member_id: int):
 
 func _on_lobby_joined(this_lobby_id: int, _permissions: int, _locked: bool, response: int):
 	if response == Steam.CHAT_ROOM_ENTER_RESPONSE_SUCCESS:
+		# Successfully joined the lobby
 		lobby_id = this_lobby_id
 		get_lobby_members()
 		make_p2p_handshake()
 	else:
+		# Failed to join the lobby, handle the error
 		var fail_reason: String
 
 		match response:
@@ -46,6 +49,8 @@ func _on_lobby_joined(this_lobby_id: int, _permissions: int, _locked: bool, resp
 
 		print_rich("[color=red]Failed to join this chat room: %s[/color]" % fail_reason)
 
+# Handles an incoming P2P session request from a remote user.
+# @param remote_id The Steam ID of the requester.
 func _on_p2p_session_request(remote_id: int):
 	var this_requester: String = Steam.getFriendPersonaName(remote_id)
 	print("%s is requesting a P2P session" % this_requester)
@@ -76,12 +81,29 @@ func _on_p2p_session_connect_fail(_steam_id: int, session_error: int) -> void:
 	else:
 		print("WARNING: Session failure with %s: unknown error %s" % [steam_id, session_error])
 
+# Initiates a peer-to-peer handshake by sending a handshake packet to the peer with ID 0.
+# The packet contains the local user's Steam ID and username.
+#
+# This function is typically used to establish an initial connection or verify identity
+# between peers in a multiplayer session using Steam networking.
 func make_p2p_handshake():
 	send_p2p_packet(0, {"message": "handshake", "steam_id": steam_id, "username": steam_username})
 
+# Sends voice data to peers via P2P packet.
+# @param voice_data: PackedByteArray containing the encoded voice data to be sent.
+# The packet includes the sender's Steam ID and username for identification.
 func send_voice_data(voice_data: PackedByteArray):
 	send_p2p_packet(1, {"voice_data": voice_data, "steam_id": steam_id, "username": steam_username})
 
+# Sends a P2P packet to specified Steam lobby members or a specific target.
+#
+# @param this_target: int - Determines the packet's recipient(s):
+#     0 - Sends to all lobby members except self on channel 0.
+#     1 - Sends to all lobby members except self on channel 1.
+#     Any other value - Sends to the specified Steam ID on channel 0.
+# @param packet_data: Dictionary - The data to be sent, which will be serialized and transmitted.
+#
+# The function uses Steam's P2P networking to send reliable packets. It skips sending to self.
 func send_p2p_packet(this_target: int, packet_data: Dictionary):
 	var send_type: int = Steam.P2P_SEND_RELIABLE
 	var channel: int = 0
@@ -113,6 +135,13 @@ func get_lobby_members():
 			"steam_name": member_steam_name
 		})
 
+# Reads all available P2P message packets up to a defined limit.
+#
+# This function recursively reads P2P packets using the Steam API until either:
+# - No more packets are available, or
+# - The specified PACKET_READ_LIMIT is reached.
+#
+# @param read_count The current number of packets read in this invocation (used for recursion and limiting).
 func read_all_p2p_msg_packets(read_count: int = 0):
 	if read_count >= PACKET_READ_LIMIT:
 		return
@@ -120,6 +149,11 @@ func read_all_p2p_msg_packets(read_count: int = 0):
 		read_p2p_msg_packet()
 		read_all_p2p_msg_packets(read_count + 1)
 
+# Reads all available P2P voice packets up to a specified limit.
+#
+# This recursive function checks for available P2P voice packets and processes them.
+#
+# @param read_count The current number of packets read in this invocation (default is 0).
 func read_all_p2p_voice_packets(read_count: int = 0):
 	if read_count >= PACKET_READ_LIMIT:
 		return
@@ -127,6 +161,12 @@ func read_all_p2p_voice_packets(read_count: int = 0):
 		read_p2p_voice_packet()
 		read_all_p2p_voice_packets(read_count + 1)
 
+# Reads an incoming P2P message packet from Steam networking.
+# - Checks for available packet size and reads the packet if present.
+# - Warns if a non-empty packet size yields an empty packet.
+# - Extracts the sender's Steam ID and packet data.
+# - Converts the packet data from bytes to a readable dictionary.
+# - Handles specific message types, such as "handshake", and performs actions like printing join notifications and updating lobby members.
 func read_p2p_msg_packet():
 	var packet_size: int = Steam.getAvailableP2PPacketSize(0)
 	if packet_size > 0:
@@ -145,6 +185,15 @@ func read_p2p_msg_packet():
 					print("PLAYER: ", readable_data["username"], " has joined.")
 					get_lobby_members()
 
+# Reads a P2P voice packet from Steam networking.
+#
+# This function checks for available P2P packets using Steam's API. If a packet is available,
+# it reads the packet and extracts the sender's Steam ID and the packet data. The data is then
+# deserialized into a readable dictionary. If the packet contains voice data, it locates the
+# corresponding player in the scene and processes the voice data for that player.
+#
+# Warnings:
+# - Prints a warning if a non-empty packet size is reported but the packet is empty or null.
 func read_p2p_voice_packet():
 	var packet_size: int = Steam.getAvailableP2PPacketSize(1)
 	if packet_size > 0:
@@ -171,26 +220,32 @@ func read_p2p_voice_packet():
 #endregion
 
 func initialize_steam() -> void:
+	# Set the environment variables for Steam
 	OS.set_environment("SteamAppId", app_id)
 	OS.set_environment("SteamGameId", app_id)
 	var initialize_response: Dictionary = Steam.steamInitEx()
 
+	# Check if Steam initialized successfully
 	if initialize_response["status"] == 0:
 		print_rich("[color=green]Steam is Running![/color]")
 		steam_id = Steam.getSteamID()
 		steam_username = Steam.getPersonaName()
 
+	# Check if Steam failed to initialize
 	if initialize_response["status"] > Steam.STEAM_API_INIT_RESULT_OK:
 		print_rich("[color=red]Failed to initialize Steam [/color] | Shutting Down: %s" % initialize_response)
 		get_tree().quit()
 
+	# Check if the user owns the game
 	if !Steam.isSubscribed():
 		print_rich("[color=red]User does not own this game.[/color]")
 		get_tree().quit()
 
 func _process(_delta: float) -> void:
+	# If in a lobby, read all P2P message packets and voice packets
 	if lobby_id > 0:
 		read_all_p2p_msg_packets()
 		read_all_p2p_voice_packets()
 
+	# Run Steam callbacks to ensure proper communication with the Steam API
 	Steam.run_callbacks()

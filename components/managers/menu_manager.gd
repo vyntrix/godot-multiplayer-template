@@ -82,6 +82,8 @@ func _on_back_to_main_menu_button_pressed() -> void:
 	hide_all_menus()
 	main_menu.show()
 
+# @experimental not working on Windows
+# See the issue #2 for more info.
 func _on_mic_select(index: int) -> void:
 	var mic_name = AudioServer.get_input_device_list()[index]
 	print_rich("[color=green]Mic selected:[/color] %s" % mic_name)

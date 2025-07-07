@@ -14,6 +14,7 @@ func get_peer():
 func update_multiplayer_peer():
 	multiplayer.multiplayer_peer = get_peer()
 
+# Sets the peer mode for the multiplayer connection.
 func set_peer_mode(peer_mode: PeerMode):
 	match peer_mode:
 		PeerMode.STEAM:
