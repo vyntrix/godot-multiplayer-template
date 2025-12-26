@@ -2,7 +2,7 @@
 
 Simple multiplayer template for Godot 4.4
 
-> Work in progress!
+> ⚠️ This Template is old and is getting a rework. Please note that it won't work anymore.
 
 > Requires Godot Steam Multiplayer Peer Build 4.15
 > [Download Here](https://github.com/GodotSteam/MultiPlayerPeer/releases/tag/v4.15-mp)
